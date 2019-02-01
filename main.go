@@ -12,7 +12,8 @@ import (
 )
 
 type Setting struct {
-	Port string
+	Port  string `yaml:"Port"`
+	Debug bool   `yaml:Debug`
 }
 
 func main() {
@@ -22,7 +23,17 @@ func main() {
 		return
 	}
 
-	router := gin.Default()
+	if s.Debug {
+		gin.SetMode(gin.DebugMode)
+	} else {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
+	router := gin.New()
+
+	router.Use(gin.Logger())
+	router.Use(gin.Recovery())
+
 	router.LoadHTMLGlob("templates/*")
 
 	// static
@@ -38,6 +49,7 @@ func main() {
 		WriteTimeout:   30 * time.Second,
 		MaxHeaderBytes: 1 << 18,
 	}
+	fmt.Println("run http server at " + server.Addr)
 	server.ListenAndServe()
 }
 
