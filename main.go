@@ -11,19 +11,22 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-type Setting struct {
+type ServerSettingType struct {
 	Port  string `yaml:"Port"`
 	Debug bool   `yaml:Debug`
 }
 
+var ServerSetting *ServerSettingType
+
 func main() {
-	s, err := loadSetting()
+	var err error
+	ServerSetting, err = loadSetting()
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 
-	if s.Debug {
+	if ServerSetting.Debug {
 		gin.SetMode(gin.DebugMode)
 	} else {
 		gin.SetMode(gin.ReleaseMode)
@@ -43,23 +46,25 @@ func main() {
 	}
 
 	server := &http.Server{
-		Addr:           ":" + s.Port,
+		Addr:           ":" + ServerSetting.Port,
 		Handler:        router,
 		ReadTimeout:    30 * time.Second,
 		WriteTimeout:   30 * time.Second,
 		MaxHeaderBytes: 1 << 18,
 	}
-	fmt.Println("run http server at " + server.Addr)
+	if ServerSetting.Debug {
+		fmt.Println("run http server at " + server.Addr)
+	}
 	server.ListenAndServe()
 }
 
-func loadSetting() (*Setting, error) {
+func loadSetting() (*ServerSettingType, error) {
 	bytes, err := ioutil.ReadFile(`./setting.yml`)
 	if err != nil {
 		return nil, err
 	}
 
-	s := Setting{}
+	s := ServerSettingType{}
 	err = yaml.Unmarshal(bytes, &s)
 	if err != nil {
 		return nil, err
