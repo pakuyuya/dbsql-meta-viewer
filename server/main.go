@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/pakuyuya/go-text-grep-app/controller/page"
+	"github.com/pakuyuya/simple-greptool/server/controller/page"
 	yaml "gopkg.in/yaml.v2"
 )
 
