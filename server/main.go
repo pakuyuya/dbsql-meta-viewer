@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/pakuyuya/simple-greptool/server/controller/api"
 	"github.com/pakuyuya/simple-greptool/server/controller/page"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -40,9 +41,13 @@ func main() {
 	router.LoadHTMLGlob("templates/*")
 
 	// static
-	gp := router.Group("/")
+	gpage := router.Group("/")
 	{
-		gp.GET("/", page.IndexGET)
+		gpage.GET("/", page.IndexGET)
+	}
+	gapi := router.Group("/api")
+	{
+		gapi.GET("/server/status", api.ServerStatusGET)
 	}
 
 	server := &http.Server{
