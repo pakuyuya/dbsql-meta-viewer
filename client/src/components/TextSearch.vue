@@ -1,5 +1,5 @@
 <template>
-<div class="outermost-box">
+<div id="content" class="outermost-box">
     <div class="left-control"></div>
     <div class="detail"></div>
 </div>
