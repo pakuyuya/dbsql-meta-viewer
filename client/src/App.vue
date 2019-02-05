@@ -5,18 +5,26 @@
 </template>
 
 <script>
+import 'ress'
+
 export default {
   name: 'App'
 }
 </script>
 
-<style>
+<style lang="scss">
+@import "@/scss/common.scss";
+
+html {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    height: 100%;
+}
+
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  @include grow-box;
 }
 </style>
