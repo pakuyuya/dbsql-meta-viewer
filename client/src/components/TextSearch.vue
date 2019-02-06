@@ -11,28 +11,25 @@
                 </div>
                 <div>
                     <input type="checkbox" value="only-word" id="TextSearch__onlyword">
-                    <lable class="checkbox-label" @click="toggleCheck('TextSearch__onlyword')">単語のみ</lable>
+                    <label for="TextSearch__onlyword" class="checkbox-label">単語のみ</label>
                     <input type="checkbox" value="only-word" id="TextSearch__not-ignorecase">
-                    <lable class="checkbox-label" @click="toggleCheck('TextSearch__not-ignorecase')">大文字小文字を区別</lable>
+                    <label for="TextSearch__not-ignorecase" class="checkbox-label">大文字小文字を区別</label>
                     <input type="checkbox" value="only-word" id="TextSearch__use-regex">
-                    <lable class="checkbox-label" @click="toggleCheck('TextSearch__use-regex')">正規表現</lable>
+                    <label for="TextSearch__use-regex" class="checkbox-label">正規表現</label>
                     <input type="checkbox" value="only-word" id="TextSearch__only-body">
-                    <lable class="checkbox-label" @click="toggleCheck('TextSearch__only-body')">本文のみ検索</lable>
+                    <label for="TextSearch__only-body" class="checkbox-label">本文のみ検索</label>
                 </div>
             </div>
             <div class="search-list__wrapper">
-                <select multiple class="search-list">
-                    <option>a</option>
-                    <option>b</option>
+                <select v-model="selectedIdxies" multiple class="search-list" @change="reloadSelectedText">
+                    <option v-for="entry in entries" v-bind:key="entry.idx" :value="entry.idx">{{entry.caption}}</option>
                 </select>
             </div>
         </div>
     </div>
     <div class="detail-view">
-        <h3 class="detail-caption">Title</h3>
-        <div class="sqlbody">
-            SELECT * FROM scheme.table;
-        </div>
+        <h3 class="detail-caption">{{ detailCaption || '...' }}</h3>
+        <pre class="sqlbody">{{ detailText }}</pre>
     </div>
 </div>
 </template>
@@ -40,12 +37,25 @@
 <script>
 export default {
   name: 'TestSearch',
+  data: () => ({
+    entries: [
+      { idx: 0, caption: '1st entry', body: 'body', since: '2019-01-03T14:00:32' },
+      { idx: 1, caption: '2nd entry', body: 'body', since: '2019-01-03T14:00:32' },
+      { idx: 2, caption: '3rd entry', body: 'body', since: '2019-01-03T14:00:32' }
+    ],
+    selectedIdxies: [],
+    detailCaption: '',
+    detailText: '',
+    detailTextSepalator: '\r\n----------------------------------\r\n',
+  }),
   methods: {
-    toggleCheck: function (id) {
-      var el = document.querySelector('#' + id)
-      if (el) {
-        el.checked = !el.checked
+    reloadSelectedText: function() {
+      let entries = [];
+      for (let i of this.selectedIdxies) {
+        entries.push(this.entries[i])
       }
+      this.detailCaption = entries.map(e => e.caption).join(', ')
+      this.detailText = entries.map(e => e.body).join(this.detailTextSepalator)
     }
   }
 }
@@ -80,7 +90,7 @@ export default {
 .left-control {
     @include grow-box;
 
-    min-width: 1px;
+    width: 260px;
     max-width: 260px;
     border-right: solid 1px $leftBGColorDark;
 
