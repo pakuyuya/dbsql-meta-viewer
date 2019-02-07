@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/pakuyuya/simple-greptool/server/domain/textdata"
+	"github.com/pakuyuya/dbsql-meta-viewer/server/domain/textdata"
 )
 
 type SearchtextGETParam struct {
