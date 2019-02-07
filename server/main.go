@@ -48,6 +48,7 @@ func main() {
 	gapi := router.Group("/api")
 	{
 		gapi.GET("/server/status", api.ServerStatusGET)
+		gapi.GET("/searchtext", api.SearchtextGET)
 	}
 
 	server := &http.Server{
