@@ -51,7 +51,7 @@ func Search(query string, with ...func(opt *searchTextdataOpt) searchTextdataOpt
 	opt := searchTextdataOpt{
 		Query:      query,
 		WordOnly:   false,
-		IgnoreCase: false,
+		IgnoreCase: true,
 		Regex:      false,
 		BodyOnly:   false,
 	}
