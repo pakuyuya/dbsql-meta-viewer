@@ -46,11 +46,11 @@ export default {
     selectedIdxies: [],
     detailCaption: '',
     detailText: '',
-    detailTextSepalator: '\r\n----------------------------------\r\n',
+    detailTextSepalator: '\r\n----------------------------------\r\n'
   }),
   methods: {
-    reloadSelectedText: function() {
-      let entries = [];
+    reloadSelectedText: function () {
+      let entries = []
       for (let i of this.selectedIdxies) {
         entries.push(this.entries[i])
       }
