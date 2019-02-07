@@ -33,7 +33,19 @@ func SwitchRepository(src *[]Textdata) {
 
 // Search is a function search textdata in shared repository
 func Search(query string, with ...func(opt *searchTextdataOpt) searchTextdataOpt) ([]Textdata, error) {
+
+	// search from shared memory(singleton, no exclusive locks)
+	refRepos := textDataRepository
+	if refRepos == nil {
+		msg := "Repository is not initialized."
+		return nil, fmt.Errorf(msg)
+	}
+
 	datas := make([]Textdata, 0, 0)
+	if query == "" {
+		datas = append(datas, *refRepos...)
+		return datas, nil
+	}
 
 	// init & applyOptions
 	opt := searchTextdataOpt{
@@ -47,26 +59,21 @@ func Search(query string, with ...func(opt *searchTextdataOpt) searchTextdataOpt
 		opt = optFunc(&opt)
 	}
 
-	// search from shared memory(singleton, no exclusive locks)
-	refRepos := textDataRepository
-	if refRepos == nil {
-		msg := "Repository is not initialized."
-		return nil, fmt.Errorf(msg)
-	}
-
 	regex, err := initRegexMatcher(&opt)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, data := range *refRepos {
-		checktext := data.Body
 		if !opt.BodyOnly {
-			checktext = data.Caption + checktext
+			if regex.MatchString(data.Caption) {
+				datas = append(datas, data)
+				continue
+			}
 		}
-
-		if regex.MatchString(checktext) {
+		if regex.MatchString(data.Body) {
 			datas = append(datas, data)
+			continue
 		}
 	}
 
@@ -76,7 +83,7 @@ func Search(query string, with ...func(opt *searchTextdataOpt) searchTextdataOpt
 func initRegexMatcher(opt *searchTextdataOpt) (*regexp.Regexp, error) {
 	s := opt.Query
 
-	if opt.Regex {
+	if !opt.Regex {
 		s = regexp.QuoteMeta(s)
 	}
 
