@@ -36,7 +36,7 @@ func SearchtextGET(c *gin.Context) {
 
 	datas, err := textdata.Search(param.Query,
 		textdata.WithWordOnly(param.WordOnly == "true"),
-		textdata.WithIgnoreCase(param.IgnoreCase == "true"),
+		textdata.WithIgnoreCase(param.IgnoreCase != "false"),
 		textdata.WithRegex(param.Regex == "true"),
 		textdata.WithBodyOnly(param.BodyOnly == "true"),
 	)
