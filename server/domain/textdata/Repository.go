@@ -5,12 +5,6 @@ import (
 	"regexp"
 )
 
-type Textdata struct {
-	Caption string `json:"caption"`
-	Body    string `json:"body"`
-	Since   string `json:"since"`
-}
-
 type searchTextdataOpt struct {
 	Query      string `form:"query"`
 	WordOnly   bool   `form:"wordOnly"`
@@ -32,7 +26,7 @@ func SwitchRepository(src *[]Textdata) {
 }
 
 // Search is a function search textdata in shared repository
-func Search(query string, with ...func(opt *searchTextdataOpt) searchTextdataOpt) ([]Textdata, error) {
+func SearchRepository(query string, with ...func(opt *searchTextdataOpt) searchTextdataOpt) ([]Textdata, error) {
 
 	// search from shared memory(singleton, no exclusive locks)
 	refRepos := textDataRepository
