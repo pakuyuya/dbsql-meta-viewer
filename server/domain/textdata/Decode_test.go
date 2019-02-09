@@ -30,4 +30,5 @@ func TestDecodeCSV(t *testing.T) {
 	gotest(`"a",b`, []Textdata{genExpect("a", "b")})
 	gotest(`a,"b"`, []Textdata{genExpect("a", "b")})
 	gotest(`"""a""","b"`, []Textdata{genExpect("\"a\"", "b")})
+	gotest(`"""a\r\nb\rc\nd""","b"`, []Textdata{genExpect("\"a\r\nb\rc\nd\"", "b")})
 }

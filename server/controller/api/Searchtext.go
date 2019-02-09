@@ -55,7 +55,7 @@ func SearchtextGET(c *gin.Context) {
 		} else {
 			resdata.Body = ""
 		}
-		resdata.Since = data.Since
+		resdata.Since = data.CreateAt
 
 		resdatas = append(resdatas, resdata)
 	}
