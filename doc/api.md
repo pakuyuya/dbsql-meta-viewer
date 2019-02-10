@@ -40,7 +40,7 @@ none
   <dd>true | false (default: false)</dd>
   <dt>bodyOnly</dt>
   <dd>true | false (default: false)</dd>
-  <dt>readBody</dt>
+  <dt>responseBody</dt>
   <dd>true | false (default: false)</dd>
 </dl>
 

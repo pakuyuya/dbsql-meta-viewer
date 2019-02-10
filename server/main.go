@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/pakuyuya/dbsql-meta-viewer/server/controller/api"
 	"github.com/pakuyuya/dbsql-meta-viewer/server/controller/page"
@@ -46,7 +47,9 @@ func main() {
 
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
-
+	router.Use(cors.New(cors.Config{
+		AllowAllOrigins: true,
+	}))
 	router.LoadHTMLGlob("templates/*")
 
 	// static

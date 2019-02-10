@@ -6,6 +6,6 @@ export default {
   resolveurl: function (path) {
     return config.apiurl
       .replace(/\{protocol\}/, document.location.protocol)
-      .replace(/\{hosit\}/, document.location.host)
+      .replace(/\{host\}/, document.location.host) + path
   }
 }

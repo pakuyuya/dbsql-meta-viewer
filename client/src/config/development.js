@@ -1,3 +1,3 @@
 export default {
-  apiurl: '{protocol}//{host}/api'
+  apiurl: '{protocol}//localhost:4000/api'
 }

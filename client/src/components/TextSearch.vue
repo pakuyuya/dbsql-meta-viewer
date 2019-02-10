@@ -7,17 +7,19 @@
             </div>
             <div class="search-form">
                 <div class="left-control__row">
-                    <input type="search" class="search__textbox"><button class="search__button">Go</button>
+                    <form @submit.prevent="searchTextdata">
+                    <input type="search" class="search__textbox" v-model="query"><button class="search__button" type="submit">Go</button>
+                    </form>
                 </div>
                 <div>
-                    <input type="checkbox" value="only-word" id="TextSearch__onlyword">
-                    <label for="TextSearch__onlyword" class="checkbox-label">単語のみ</label>
-                    <input type="checkbox" value="only-word" id="TextSearch__not-ignorecase">
+                    <input type="checkbox" id="TextSearch__wordOnly" v-model="wordOnly">
+                    <label for="TextSearch__wordOnly" class="checkbox-label">単語のみ</label>
+                    <input type="checkbox" id="TextSearch__not-ignorecase" v-model="notIgnoreCase">
                     <label for="TextSearch__not-ignorecase" class="checkbox-label">大文字小文字を区別</label>
-                    <input type="checkbox" value="only-word" id="TextSearch__use-regex">
-                    <label for="TextSearch__use-regex" class="checkbox-label">正規表現</label>
-                    <input type="checkbox" value="only-word" id="TextSearch__only-body">
-                    <label for="TextSearch__only-body" class="checkbox-label">本文のみ検索</label>
+                    <input type="checkbox" id="TextSearch__regex" v-model="regex">
+                    <label for="TextSearch__regex" class="checkbox-label">正規表現</label>
+                    <input type="checkbox" id="TextSearch__bodyOnly" v-model="bodyOnly">
+                    <label for="TextSearch__bodyOnly" class="checkbox-label">本文のみ検索</label>
                 </div>
             </div>
             <div class="search-list__wrapper">
@@ -35,20 +37,48 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'TestSearch',
   data: () => ({
-    entries: [
-      { idx: 0, caption: '1st entry', body: 'body', since: '2019-01-03T14:00:32' },
-      { idx: 1, caption: '2nd entry', body: 'body', since: '2019-01-03T14:00:32' },
-      { idx: 2, caption: '3rd entry', body: 'body', since: '2019-01-03T14:00:32' }
-    ],
+    query: '',
+    wordOnly: false,
+    notIgnoreCase: false,
+    regex: false,
+    bodyOnly: false,
+    entries: [],
     selectedIdxies: [],
     detailCaption: '',
     detailText: '',
     detailTextSepalator: '\r\n----------------------------------\r\n'
   }),
+  mounted: function () {
+    this.searchTextdata()
+  },
   methods: {
+    searchTextdata: function () {
+      const baseurl = this.$ownapi.resolveurl('/searchtext')
+      const queryparm = [
+        `query=${encodeURIComponent(this.query)}`,
+        `wordOnly=${this.wordOnly}`,
+        `ignoreCase=${!this.notIgnoreCase}`,
+        `regex=${this.regex}`,
+        `bodyOnly=${this.bodyOnly}`,
+        'responseBody=true'
+      ].join('&')
+
+      axios.get(`${baseurl}?${queryparm}`)
+        .then(response => {
+          let data = response.data
+          if (data.Error) {
+            alert('テキストデータの検索に失敗しました')
+            return
+          }
+          this.entries = data.datas
+          this.selectedIdxies = response.count > 0 ? [0] : []
+        })
+    },
     reloadSelectedText: function () {
       let entries = []
       for (let i of this.selectedIdxies) {

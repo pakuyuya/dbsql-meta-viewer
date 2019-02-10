@@ -8,7 +8,7 @@ import (
 )
 
 type SearchtextGETParam struct {
-	Query        string `form:"query" binding:"required"`
+	Query        string `form:"query"`
 	WordOnly     string `form:"wordOnly"`
 	IgnoreCase   string `form:"ignoreCase"`
 	Regex        string `form:"regex"`
