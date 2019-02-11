@@ -6,7 +6,7 @@ rd /Q /S .\dist
 
 mkdir .\dist
 mkdir .\dist\static
-mkdir .\dist\templetes
+mkdir .\dist\templates
 
 copy /Y .\setting.yml .\dist\
 

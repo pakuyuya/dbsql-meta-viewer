@@ -12,5 +12,5 @@ rd /Q /S .\dist
 mkdir dist
 
 xcopy .\server\dist .\dist /S /E
-copy .\cilet\dist\*.html .\dist\templetes
-xcopy .\cilet\dist\static .\dist\static /S /E
+copy  .\client\dist\*.html .\dist\templates
+xcopy .\client\dist\static .\dist\static /S /E
