@@ -56,7 +56,9 @@ func main() {
 	gpage := router.Group("/")
 	{
 		gpage.GET("/", page.IndexGET)
+		gpage.Static("/static", "./static")
 	}
+	// api
 	gapi := router.Group("/api")
 	{
 		gapi.GET("/server/status", api.ServerStatusGET)
