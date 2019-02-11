@@ -1,10 +1,10 @@
 @echo off
 
 echo building client..
-.\client\build.bat
+call .\client\build.bat
 
 echo building server..
-.\server\build.bat
+call .\server\build.bat
 
 echo copy dists...
 rd /Q /S .\dist
