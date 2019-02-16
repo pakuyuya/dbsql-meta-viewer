@@ -10,7 +10,8 @@ ADD ./entrypoint.sh /
 
 RUN chmod +x /entrypoint.sh \
     && apk update \
-    && apk add git dep \
+    && apk add --no-cache git dep nodejs=10.14.2-r0 \
     && mkdir -p "$GOPATH/src/$GODOMAIN"
+
 
 ENTRYPOINT ["/entrypoint.sh"]
