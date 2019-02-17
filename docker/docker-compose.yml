@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    volumes:
+      - ./datas:/var/app/datas
+    ports:
+      - 4000:4000
+    entrypoint: ./server
+    working_dir: /var/app
+
