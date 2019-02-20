@@ -2,13 +2,14 @@
 <div id="content" class="outermost-box">
     <div class="left-control">
         <div class="left-control__wrapper">
-            <div class="gmenus left-control__row">
-                <div class="button">Sql検索</div>
+            <div class="left-control__header left-control__row">
+                <div class="left-control__caption">Sql検索</div>
+                <div class="left-control__config"><span class="config-icon" @click="$refs.SettingsDlg.show()"></span></div>
             </div>
             <div class="search-form">
                 <div class="left-control__row">
                     <form @submit.prevent="searchTextdata">
-                    <input type="search" class="search__textbox" v-model="query"><button class="search__button" type="submit">Go</button>
+                        <input type="search" class="search__textbox" v-model="query"><button class="search__button" type="submit">Go</button>
                     </form>
                 </div>
                 <div>
@@ -33,14 +34,19 @@
         <h3 class="detail-caption">{{ detailCaption || '...' }}</h3>
         <pre class="sqlbody">{{ detailText }}</pre>
     </div>
+    <SettingsDlg ref="SettingsDlg"></SettingsDlg>
 </div>
 </template>
 
 <script>
 import axios from 'axios'
+import SettingsDlg from './SettingsDlg'
 
 export default {
   name: 'TestSearch',
+  components: {
+    SettingsDlg
+  },
   data: () => ({
     query: '',
     wordOnly: false,
@@ -143,6 +149,34 @@ export default {
     margin-bottom: 6px;
 }
 
+.left-control__header {
+    display: flex;
+    flex-direction: row;
+}
+.left-control__caption {
+    display: inline-block;
+    flex-grow: 1;
+}
+.left-control__config {
+    display: inline-block;
+    margin-right: 20px;
+}
+.config-icon {
+    display: inline-block;
+    height: 22px;
+    width: 22px;
+    background: url('../assets/gear.png');
+    background-size: 14px 14px;
+    background-position: center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    border-radius: 9px;
+
+    &:hover {
+        background-color: #00000088;
+    }
+}
+
 .search__textbox {
     vertical-align: middle;
     font-size: 12px;
@@ -151,6 +185,10 @@ export default {
     display: inline-box;
     background: $leftCtlBGColor;
     color: $leftCtlTextColor;
+    &.error {
+        border-color: #f82266;
+        background-color: #fee8f0;
+    }
 }
 .search__button {
     vertical-align: middle;
