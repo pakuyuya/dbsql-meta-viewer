@@ -1,7 +1,6 @@
-FROM dbsql-meta-viewer-base:latest
+FROM golang:1.11.5-alpine3.9
 MAINTAINER pakuyuya
 
-ARG REVISION=HEAD
 ARG REPOSITORY=https://github.com/pakuyuya/dbsql-meta-viewer.git
 ARG GODOMAIN=github.com/pakuyuya
 ARG FILEOWNER=root:root
@@ -12,8 +11,19 @@ ENV GOPATH=/go \
     DATASSRC=/var/datas \
     DATASDIR=$APPDIR/datas
 
-RUN cd "$GOPATH/src/$GODOMAIN/dbsql-meta-viewer" \
-    && git pull origin \
+RUN apk update \
+    && apk add --no-cache git dep nodejs=10.14.2-r0 npm=10.14.2-r0 \
+    && mkdir -p "$GOPATH/src/$GODOMAIN" \
+    \
+    && git clone $REPOSITORY "$GOPATH/src/$GODOMAIN/dbsql-meta-viewer" \
+    && cd "$GOPATH/src/$GODOMAIN/dbsql-meta-viewer" \
+    \
+    && echo building client.. \
+    && /bin/sh `pwd`/client/build.sh \
+    \
+    && echo building server.. \
+    && /bin/sh `pwd`/server/build.sh \
+    \
     && echo copy dists... \
     && rm -rf $APPDIR \
     && mkdir  $APPDIR \
