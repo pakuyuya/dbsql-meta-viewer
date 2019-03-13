@@ -41,6 +41,7 @@
 <script>
 import axios from 'axios'
 import SettingsDlg from './SettingsDlg'
+import hljs from 'highlight.js'
 
 export default {
   name: 'TestSearch',
