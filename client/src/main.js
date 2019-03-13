@@ -5,8 +5,11 @@ import App from './App'
 import router from './router'
 import config from 'config'
 import services from './services/entry'
+import VueHighlightJS from 'vue-highlightjs'
 
 Vue.config.productionTip = false
+
+Vue.use(VueHighlightJS)
 
 const configMixin = Vue.mixin({
   created: function () {
