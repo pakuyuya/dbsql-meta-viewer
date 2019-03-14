@@ -34,11 +34,11 @@ m.regex = (pattern) => {
             isAllowRepeat = true
             isAllowQues = true
         } else if (c === '(') {
-            ++parentheses;
+            ++parenthesesNests;
             isAllowRepeat = false
             isAllowQues = false
         } else if (c === ')') {
-            if (--parentheses < 0) {
+            if (--parenthesesNests < 0) {
                 return false
             }
             isAllowRepeat = true
@@ -58,7 +58,7 @@ m.regex = (pattern) => {
         }
     }
     
-    return parentheses === 0
+    return parenthesesNests === 0
 
     function execEscaped() {
         return (++i > len)
