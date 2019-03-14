@@ -58,6 +58,8 @@ m.regex = (pattern) => {
         }
     }
     
+    return parentheses === 0
+
     function execEscaped() {
         return (++i > len)
     }
