@@ -84,6 +84,9 @@ export default {
           this.entries = data.datas
           this.selectedIdxies = response.count > 0 ? [0] : []
         })
+        .catch(response => {
+            console.log(response)
+        })
     },
     reloadSelectedText: function () {
       let entries = []
