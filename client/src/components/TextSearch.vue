@@ -9,19 +9,20 @@
             <div class="search-form">
                 <div class="left-control__row">
                     <form @submit.prevent="searchTextdata">
-                        <input type="search" class="search__textbox" v-model="query"><button class="search__button" type="submit">Go</button>
+                        <input type="search" class="search__textbox" v-bind:class="{ error: hasQueryAlert }" v-model="query" @keyup="refleshQueryAlert"><button class="search__button" type="submit">Go</button>
                     </form>
                 </div>
                 <div>
-                    <input type="checkbox" id="TextSearch__wordOnly" v-model="wordOnly">
+                    <input type="checkbox" id="TextSearch__wordOnly" v-model="wordOnly" @change="refleshQueryAlert">
                     <label for="TextSearch__wordOnly" class="checkbox-label">単語のみ</label>
-                    <input type="checkbox" id="TextSearch__not-ignorecase" v-model="notIgnoreCase">
+                    <input type="checkbox" id="TextSearch__not-ignorecase" v-model="notIgnoreCase" @change="refleshQueryAlert">
                     <label for="TextSearch__not-ignorecase" class="checkbox-label">大文字小文字を区別</label>
-                    <input type="checkbox" id="TextSearch__regex" v-model="regex">
+                    <input type="checkbox" id="TextSearch__regex" v-model="regex" @change="refleshQueryAlert">
                     <label for="TextSearch__regex" class="checkbox-label">正規表現</label>
-                    <input type="checkbox" id="TextSearch__bodyOnly" v-model="bodyOnly">
+                    <input type="checkbox" id="TextSearch__bodyOnly" v-model="bodyOnly" @change="refleshQueryAlert">
                     <label for="TextSearch__bodyOnly" class="checkbox-label">本文のみ検索</label>
                 </div>
+                <div v-if="errorMessage !== ''" class="error-box">{{ errorMessage }}</div>
             </div>
             <div class="search-list__wrapper">
                 <select v-model="selectedIdxies" multiple class="search-list" @change="reloadSelectedText">
@@ -41,6 +42,7 @@
 <script>
 import axios from 'axios'
 import SettingsDlg from './SettingsDlg'
+import isvalid from '@/js/isvalid'
 
 export default {
   name: 'TestSearch',
@@ -57,13 +59,16 @@ export default {
     selectedIdxies: [],
     detailCaption: '',
     detailText: '',
-    detailTextSepalator: '\r\n----------------------------------\r\n'
+    detailTextSepalator: '\r\n----------------------------------\r\n',
+    errorMessage: '',
+    hasQueryAlert: false
   }),
   mounted: function () {
     this.searchTextdata()
   },
   methods: {
     searchTextdata: function () {
+      this.setError('')
       const baseurl = this.$ownapi.resolveurl('/searchtext')
       const queryparm = [
         `query=${encodeURIComponent(this.query)}`,
@@ -77,15 +82,12 @@ export default {
       axios.get(`${baseurl}?${queryparm}`)
         .then(response => {
           let data = response.data
-          if (data.Error) {
-            alert('テキストデータの検索に失敗しました')
-            return
-          }
           this.entries = data.datas
           this.selectedIdxies = response.count > 0 ? [0] : []
         })
         .catch(response => {
-            console.log(response)
+          this.setError('検索処理でエラーが発生しました。開発者向けヒント：F12開発者コンソールをご確認ください。')
+          console.error(response)
         })
     },
     reloadSelectedText: function () {
@@ -95,6 +97,19 @@ export default {
       }
       this.detailCaption = entries.map(e => e.caption).join(', ')
       this.detailText = entries.map(e => e.body).join(this.detailTextSepalator)
+    },
+    refleshQueryAlert: function () {
+      this.hasQueryAlert = !this.checkQueryCond()
+    },
+    checkQueryCond: function () {
+      if (this.regex && !isvalid.regex(this.query)) {
+        return false
+      }
+      return true
+    },
+    setError: function (msg) {
+      msg = msg || ''
+      this.errorMessage = msg
     }
   }
 }
@@ -189,7 +204,7 @@ export default {
     background: $leftCtlBGColor;
     color: $leftCtlTextColor;
     &.error {
-        border-color: #f82266;
+        color: #f82266;
         background-color: #fee8f0;
     }
 }
@@ -258,6 +273,11 @@ input[type=checkbox] {
 }
 input[type=checkbox]:checked + .checkbox-label:before {
   opacity: 1;
+}
+
+.error-box {
+    color: #dc143c;
+    font-size: 10px;
 }
 
 .search-list__wrapper {
