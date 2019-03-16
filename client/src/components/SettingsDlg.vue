@@ -7,6 +7,7 @@
     </div>
   </header>
   <div class="content">
+    <div v-if="textdata_msg != ''">{{ textdata_msg }}</div>
     <div v-if="currentTab === 'textdata'">
       <h4>検索データをアップロードする</h4>
       <div>
@@ -16,7 +17,6 @@
                 @click="uploadTextdata">アップロード</button>
       </div>
       <h4>テキストデータ一覧</h4>
-      <div v-if="textdata_msg != ''">{{ textdata_msg }}</div>
       <div>
         <table>
           <tr>
@@ -67,7 +67,7 @@ export default {
     },
     resetForm: function () {
       document.querySelector('#config_textdatafile').value = ''
-      this.uploadfile = null
+      this.textdata_uploadfile = null
       this.textdatas = []
     },
     requestReloadTextdata: function () {
@@ -101,6 +101,7 @@ export default {
         .then(() => {
           this.resetForm()
           this.requestReloadTextdata()
+          this.textdata_msg = 'ファイルをアップロードしました'
         })
         .catch(response => {
           this.textdata_msg = 'アップロードが失敗しました。開発者向けヒント：F12開発者コンソールをご確認ください。'
