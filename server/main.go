@@ -2,36 +2,27 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"path"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/pakuyuya/dbsql-meta-viewer/server/controller/api"
+	api_datafile "github.com/pakuyuya/dbsql-meta-viewer/server/controller/api/datafile"
 	"github.com/pakuyuya/dbsql-meta-viewer/server/controller/page"
 	"github.com/pakuyuya/dbsql-meta-viewer/server/domain/textdata"
-	yaml "gopkg.in/yaml.v2"
+	"github.com/pakuyuya/dbsql-meta-viewer/server/setting"
 )
-
-type ServerSettingType struct {
-	Port        string `yaml:"Port"`
-	Debug       bool   `yaml:"Debug"`
-	TextdataDir string `yaml:"TextdataDir"`
-}
-
-var ServerSetting *ServerSettingType
 
 func main() {
 	var err error
-	ServerSetting, err = loadSetting()
+	err = setting.LoadSetting()
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 
-	if ServerSetting.Debug {
+	if setting.ServerSetting.Debug {
 		gin.SetMode(gin.DebugMode)
 	} else {
 		gin.SetMode(gin.ReleaseMode)
@@ -62,39 +53,26 @@ func main() {
 	{
 		gapi.GET("/server/status", api.ServerStatusGET)
 		gapi.GET("/searchtext", api.SearchtextGET)
+		gapi.GET("/datafile/list", api_datafile.ListGET)
+		gapi.GET("/datafile/upload", api_datafile.UploadPOST)
 	}
 
 	server := &http.Server{
-		Addr:           ":" + ServerSetting.Port,
+		Addr:           ":" + setting.ServerSetting.Port,
 		Handler:        router,
 		ReadTimeout:    30 * time.Second,
 		WriteTimeout:   30 * time.Second,
 		MaxHeaderBytes: 1 << 18,
 	}
-	if ServerSetting.Debug {
+	if setting.ServerSetting.Debug {
 		fmt.Println("run http server at " + server.Addr)
 	}
 	server.ListenAndServe()
 }
 
-func loadSetting() (*ServerSettingType, error) {
-	bytes, err := ioutil.ReadFile(`./setting.yml`)
-	if err != nil {
-		return nil, err
-	}
-
-	s := ServerSettingType{}
-	err = yaml.Unmarshal(bytes, &s)
-	if err != nil {
-		return nil, err
-	}
-
-	return &s, nil
-}
-
 func loadDefaultTextdata() error {
 	// load from `/path/to/textdata/dir/*`
-	path := path.Join(ServerSetting.TextdataDir, "*")
+	path, _ := setting.ResolveTextdatasPath()
 	datas, err := textdata.LoadAllCsv(path)
 	if err != nil {
 		return err

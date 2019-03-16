@@ -32,7 +32,7 @@ func UploadPOST(c *gin.Context) {
 	}
 	tempFile.Close()
 
-	err := c.SaveUploadedFile(f, tempFile.Name())
+	err = c.SaveUploadedFile(f, tempFile.Name())
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

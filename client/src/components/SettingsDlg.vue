@@ -7,7 +7,7 @@
     </div>
   </header>
   <div class="content">
-    ※あとで項目を追加する予定です。
+    
   </div>
 </dialog>
 </template>
