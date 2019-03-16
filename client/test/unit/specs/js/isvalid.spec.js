@@ -39,6 +39,8 @@ describe('isvalid.regex()', () => {
     expect(isvalid.regex('a{}')).toEqual(false)
     expect(isvalid.regex('a{q}')).toEqual(false)
     expect(isvalid.regex('a{1,2,3}')).toEqual(false)
+    expect(isvalid.regex('}')).toEqual(false)
+    expect(isvalid.regex('aa}')).toEqual(false)
     expect(isvalid.regex('\\')).toEqual(false)
   })
 })

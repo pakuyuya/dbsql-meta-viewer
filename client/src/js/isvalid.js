@@ -115,12 +115,13 @@ m.regex = (pattern) => {
     }
 
     function execSquare() {
+        const enteri = i;
         let prevLetter = false
         let prevHyphen = false
         let hasLetter = false
         while (i < len) {
             const c = pattern[i++]
-            if (i <= 1 && c === '^') {
+            if (i <= enteri + 1 && c === '^') {
                 continue
             }
             if (c === ']') {
