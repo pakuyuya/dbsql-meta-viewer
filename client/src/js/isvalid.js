@@ -4,79 +4,97 @@ m.regex = (pattern) => {
     // * after `a`, `\a`, `[a]`, `(a)`         => true
     // * after `a*`, `a{1,1}`, `a|`, `(`, `a?` => false
     let isAllowRepeat = false
-    let isAllowQues   = false
+    let isAllowOptQues   = false
+    let isAllowPoorQues   = false
 
     let parenthesesNests = 0
     const len = pattern.length
     let i = 0;
-    while (i<len) {
-        const c = pattern[i]
-        ++i
+    while (i < len) {
+        const c = pattern[i++]
         if (c === '*' || c === '+') {
             if (!isAllowRepeat) {
                 return false
             }
             isAllowRepeat = false
-            isAllowQues = true
+            isAllowOptQues = false
+            isAllowPoorQues = true
         } else if (c === '?') {
-            if (!isAllowQues) {
-                return false
+            if (isAllowOptQues) {
+                isAllowRepeat = false
+                isAllowOptQues = false
+                isAllowPoorQues = true
+            } else if (isAllowPoorQues) {
+                isAllowRepeat = false
+                isAllowOptQues = false
+                isAllowPoorQues = false
+            } else {
+                return false;
             }
-            isAllowRepeat = false
-            isAllowQues = false
         } else if (c === '|') {
             isAllowRepeat = false
-            isAllowQues = false
+            isAllowOptQues = false
+            isAllowPoorQues = false
         } else if (c === '\\') {
             if (!execEscaped()) {
                 return false
             }
             isAllowRepeat = true
-            isAllowQues = true
+            isAllowOptQues = true
+            isAllowPoorQues = false
         } else if (c === '(') {
             ++parenthesesNests;
             isAllowRepeat = false
-            isAllowQues = false
+            isAllowOptQues = false
+            isAllowPoorQues = false
         } else if (c === ')') {
             if (--parenthesesNests < 0) {
                 return false
             }
             isAllowRepeat = true
-            isAllowQues = true
+            isAllowOptQues = true
+            isAllowPoorQues = false
         } else if (c === '{') {
-            if (execWave()) {
+            if (!execWave()) {
                 return false
             }
             isAllowRepeat = false
-            isAllowQues = true
+            isAllowOptQues = true
+            isAllowPoorQues = false
+        } else if (c === '}') {
+            return false;
         } else if (c === '[') {
-            if (execSquare()) {
+            if (!execSquare()) {
                 return false
             }
             isAllowRepeat = true
-            isAllowQues = true
+            isAllowOptQues = true
+            isAllowPoorQues = false
+        } else {
+            isAllowRepeat = true
+            isAllowOptQues  = true
+            isAllowPoorQues = false
         }
     }
-    
     return parenthesesNests === 0
 
     function execEscaped() {
-        return (++i > len)
+        return (++i <= len)
     }
 
     function execWave() {
+        const entryi = i
         while (i < len) {
-            const c = pattern.charCodeAt(i)
-            ++i
+            const c = pattern.charCodeAt(i++)
             if (c === 0x7d) {
                 // c === }
-                return true
+                return entryi < i-1
             }
             if (c === 0x2c) {
                 // c === ,
                 break
             }
-            if (c > 0x30 || c < 0x39) {
+            if (c < 0x30 || c > 0x39) {
                 // not a number
                 return false
             }
@@ -88,7 +106,7 @@ m.regex = (pattern) => {
                 // c === }
                 return true
             }
-            if (c > 0x30 || c < 0x39) {
+            if (c < 0x30 || c > 0x39) {
                 // not a number
                 return false
             }
@@ -97,14 +115,22 @@ m.regex = (pattern) => {
     }
 
     function execSquare() {
+        let prevLetter = false
         let prevHyphen = false
+        let hasLetter = false
         while (i < len) {
-            const c = pattern[i]
+            const c = pattern[i++]
+            if (i <= 1 && c === '^') {
+                continue
+            }
             if (c === ']') {
-                return !prevHyphen
+                return !prevHyphen && hasLetter
             } else if (c === '-') {
-                prevHyphen = !prevHyphen
+                prevHyphen = prevLetter
+                prevLetter = !prevLetter
             } else {
+                hasLetter = true
+                prevLetter = true
                 prevHyphen = false
             }
         }
@@ -112,6 +138,5 @@ m.regex = (pattern) => {
     }
 
 }
-const x
 
 export default m

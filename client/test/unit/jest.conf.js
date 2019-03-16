@@ -23,5 +23,6 @@ module.exports = {
     '!src/main.js',
     '!src/router/index.js',
     '!**/node_modules/**'
-  ]
+  ],
+  testURL: "http://localhost/",
 }
