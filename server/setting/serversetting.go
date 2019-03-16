@@ -30,6 +30,6 @@ func LoadSetting() error {
 	return nil
 }
 
-func ResolveTextdatasPath() (string, error) {
-	return path.Join(ServerSetting.TextdataDir, "*"), nil
+func ResolveTextdatasPath(filename string) (string, error) {
+	return path.Join(ServerSetting.TextdataDir, filename), nil
 }

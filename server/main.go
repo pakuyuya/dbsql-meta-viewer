@@ -54,7 +54,7 @@ func main() {
 		gapi.GET("/server/status", api.ServerStatusGET)
 		gapi.GET("/searchtext", api.SearchtextGET)
 		gapi.GET("/datafile/list", api_datafile.ListGET)
-		gapi.GET("/datafile/upload", api_datafile.UploadPOST)
+		gapi.POST("/datafile/upload", api_datafile.UploadPOST)
 	}
 
 	server := &http.Server{
@@ -72,7 +72,7 @@ func main() {
 
 func loadDefaultTextdata() error {
 	// load from `/path/to/textdata/dir/*`
-	path, _ := setting.ResolveTextdatasPath()
+	path, _ := setting.ResolveTextdatasPath("*")
 	datas, err := textdata.LoadAllCsv(path)
 	if err != nil {
 		return err

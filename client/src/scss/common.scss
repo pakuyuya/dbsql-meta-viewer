@@ -6,3 +6,25 @@
     flex-grow: 1;
     height: 100%;
 }
+
+@mixin button-common {
+    border-radius: 4px 4px;
+    cursor: pointer;
+    padding: 3px 5px;
+}
+
+.disabled-button {
+    background: $disabledColor;
+    color: $disabledTextColor;
+    @include button-common;
+    cursor: default;
+}
+.primary-button {
+    background: $primaryColor;
+    color: $primaryTextColor;
+    @include button-common;
+
+    &:hover {
+        background: $primaryColorLight;
+    }
+}

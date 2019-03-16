@@ -11,7 +11,9 @@
       <h4>検索データをアップロードする</h4>
       <div>
         <input id="config_textdatafile" type="file" name="file" @change="selectTextdataFile">
-        <button type="submit" class="primary button" @click="uploadTextdata">アップロード</button>
+        <button type="submit"
+                v-bind:class="{ 'primary-button': textdata_okupload, 'disabled-button': !textdata_okupload }"
+                @click="uploadTextdata">アップロード</button>
       </div>
       <h4>テキストデータ一覧</h4>
       <div v-if="textdata_msg != ''">{{ textdata_msg }}</div>
@@ -41,8 +43,13 @@ export default {
     currentTab: 'textdata',
     textdatas: [],
     textdata_uploadfile: null,
-    textdata_msg: ''
+    textdata_msg: '',
   }),
+  computed: {
+    textdata_okupload: function () {
+      return this.textdata_uploadfile !== null
+    }
+  },
   methods: {
     show: function () {
       let dlg = document.querySelector('#settingsdlg')
@@ -79,7 +86,26 @@ export default {
         })
     },
     uploadTextdata: function () {
+      const baseurl = this.$ownapi.resolveurl('/datafile/upload')
 
+      let formData = new FormData()
+      formData.append('file', this.textdata_uploadfile)
+      
+      const config = {
+        headers: {
+          'content-type': 'multipart/form-data'
+        }
+      }
+
+      axios.post(`${baseurl}`, formData, config)
+        .then(() => {
+          this.resetForm()
+          this.requestReloadTextdata()
+        })
+        .catch(response => {
+          this.textdata_msg = 'アップロードが失敗しました。開発者向けヒント：F12開発者コンソールをご確認ください。'
+          console.error(response)
+        })
     },
     selectTextdataFile: function (e) {
       e.preventDefault()

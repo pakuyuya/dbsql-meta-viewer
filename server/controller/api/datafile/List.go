@@ -20,7 +20,7 @@ type datafileInfo struct {
 }
 
 func ListGET(c *gin.Context) {
-	p, _ := setting.ResolveTextdatasPath()
+	p, _ := setting.ResolveTextdatasPath("*")
 	lfp := textdata.ListupFilePathes(p)
 
 	datas := make([]datafileInfo, 0)
