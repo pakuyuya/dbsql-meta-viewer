@@ -11,7 +11,7 @@ import (
 )
 
 type ListGETResponse struct {
-	List []datafileInfo `json:"list"`
+	Datas []datafileInfo `json:"datas"`
 }
 
 type datafileInfo struct {
@@ -23,7 +23,7 @@ func ListGET(c *gin.Context) {
 	p, _ := setting.ResolveTextdatasPath()
 	lfp := textdata.ListupFilePathes(p)
 
-	list := make([]datafileInfo, 0)
+	datas := make([]datafileInfo, 0)
 	for _, fp := range lfp {
 		info := datafileInfo{}
 		info.Filename = filepath.Base(fp)
@@ -33,9 +33,9 @@ func ListGET(c *gin.Context) {
 			info.LastUpdate = fi.ModTime().Format("2006-01-02 15:04:05")
 		}
 
-		list = append(list, info)
+		datas = append(datas, info)
 	}
 
-	response := ListGETResponse{List: list}
+	response := ListGETResponse{Datas: datas}
 	c.JSON(http.StatusOK, response)
 }

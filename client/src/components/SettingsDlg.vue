@@ -1,27 +1,55 @@
 <template>
 <dialog id="settingsdlg" class="settings-wrapper">
   <header>
-    <h3>コントロール</h3>
+    <h3>設定</h3>
     <div class="close-button-wrapper">
       <div class="close-button" @click="close">×</div>
     </div>
   </header>
   <div class="content">
-    
+    <div v-if="currentTab === 'textdata'">
+      <h4>検索データをアップロードする</h4>
+      <div>
+        <input id="config_textdatafile" type="file" name="file" @change="selectTextdataFile">
+        <button type="submit" class="primary button" @click="uploadTextdata">アップロード</button>
+      </div>
+      <h4>テキストデータ一覧</h4>
+      <div v-if="textdata_msg != ''">{{ textdata_msg }}</div>
+      <div>
+        <table>
+          <tr>
+            <th>ファイル</th>
+            <th>更新日時</th>
+          </tr>
+          <tr v-for="textdata in textdatas" v-bind:key="textdata.filename">
+            <td>{{ textdata.filename }}</td>
+            <td>{{ textdata.lastupdate }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
   </div>
 </dialog>
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'SettingsDlg',
   data: () => ({
+    currentTab: 'textdata',
+    textdatas: [],
+    textdata_uploadfile: null,
+    textdata_msg: ''
   }),
   methods: {
     show: function () {
       let dlg = document.querySelector('#settingsdlg')
       if (dlg && !dlg.open) {
         dlg.showModal()
+        this.resetForm()
+        this.requestReloadTextdata()
       }
     },
     close: function () {
@@ -29,6 +57,34 @@ export default {
       if (dlg && dlg.open) {
         dlg.close()
       }
+    },
+    resetForm: function () {
+      document.querySelector('#config_textdatafile').value = ''
+      this.uploadfile = null
+      this.textdatas = []
+    },
+    requestReloadTextdata: function () {
+      const baseurl = this.$ownapi.resolveurl('/datafile/list')
+      const queryparm = [].join('&')
+      this.textdata_msg = ''
+
+      axios.get(`${baseurl}?${queryparm}`)
+        .then(response => {
+          let data = response.data
+          this.textdatas = data.datas
+        })
+        .catch(response => {
+          this.textdata_msg = 'テキストデータ一覧が取得できませんでした。開発者向けヒント：F12開発者コンソールをご確認ください。'
+          console.error(response)
+        })
+    },
+    uploadTextdata: function () {
+
+    },
+    selectTextdataFile: function (e) {
+      e.preventDefault()
+      let files = e.target.files
+      this.textdata_uploadfile = files[0]
     }
   }
 }
@@ -58,6 +114,8 @@ dialog {
   border: none;
   box-shadow: 0px 0px 5px #000000cc;
   margin: 0px auto;
+  height: 70%;
+  min-height: 150px;
 }
 
 dialog::backdrop {
@@ -105,6 +163,21 @@ h3 {
 
 .content {
   padding: 10px;
+  font-size: 12px;
+  overflow: scroll-y;
+  height:100%;
 }
 
+h4 {
+  font-size: 16px;
+  margin-top: 15px;
+  margin-bottom: 8px;
+}
+table {
+  border-collapse: collapse;
+}
+th, td {
+  border: solid 1px $grayLine;
+  padding: 3px 5px;
+}
 </style>
