@@ -142,7 +142,7 @@ export default {
       }
 
       const baseurl = this.$ownapi.resolveurl(`/datafile/remove/${filename}`)
-      axios.delete(`${baseurl}`)
+      axios.post(`${baseurl}`)
         .then(() => {
           this.resetForm()
           this.requestReloadTextdata()

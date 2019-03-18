@@ -56,6 +56,7 @@ func main() {
 		gapi.GET("/datafile/list", api_datafile.ListGET)
 		gapi.POST("/datafile/upload", api_datafile.UploadPOST)
 		gapi.GET("/datafile/download/:filename", api_datafile.DownloadGET)
+		gapi.POST("/datafile/remove/:filename", api_datafile.RemovePOST)
 	}
 
 	server := &http.Server{
