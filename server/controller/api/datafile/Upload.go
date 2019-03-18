@@ -1,4 +1,4 @@
-package api
+package datafile
 
 import (
 	"net/http"

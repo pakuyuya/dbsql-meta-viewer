@@ -55,6 +55,7 @@ func main() {
 		gapi.GET("/searchtext", api.SearchtextGET)
 		gapi.GET("/datafile/list", api_datafile.ListGET)
 		gapi.POST("/datafile/upload", api_datafile.UploadPOST)
+		gapi.GET("/datafile/download/:filename", api_datafile.DownloadGET)
 	}
 
 	server := &http.Server{

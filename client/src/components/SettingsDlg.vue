@@ -122,10 +122,11 @@ export default {
       this.textdata_uploadfile = files[0]
     },
     download: function (filename) {
-      const baseurl = this.$ownapi.resolveurl(`/datafile/${filename}`)
+      const baseurl = this.$ownapi.resolveurl(`/datafile/download/${filename}`)
       axios.get(baseurl)
         .then((response) => {
-          const blob = new Blob(response.data, { type: response.headers['Content-Type'] })
+          console.log(response)
+          const blob = new Blob([response.data], { type: response.headers['Content-Type'] })
           let link = document.createElement('a')
           link.href = window.URL.createObjectURL(blob)
           link.download = filename
@@ -141,7 +142,7 @@ export default {
         return
       }
 
-      const baseurl = this.$ownapi.resolveurl(`/datafile/${filename}`)
+      const baseurl = this.$ownapi.resolveurl(`/datafile/remove/${filename}`)
       axios.delete(`${baseurl}`)
         .then(() => {
           this.resetForm()
