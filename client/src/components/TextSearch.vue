@@ -33,7 +33,7 @@
     </div>
     <div class="detail-view">
         <h3 class="detail-caption">{{ detailCaption || '...' }}</h3>
-        <pre v-highlightjs="detailText" class="sqlbody"><code class="sql"></code></pre>
+        <div v-highlightjs="detailText" class="sqlbody"><code class="sql"></code></div>
     </div>
     <SettingsDlg ref="SettingsDlg"></SettingsDlg>
 </div>
@@ -120,6 +120,7 @@ export default {
 
 ::-webkit-scrollbar {
     width: 10px;
+    height: 10px;
 }
 
 /*スクロールバーの軌道*/
@@ -300,6 +301,7 @@ input[type=checkbox]:checked + .checkbox-label:before {
 }
 
 .detail-view {
+    width: calc(100% - 300px);
     display: flex;
     display: -webkit-flex;
     flex-direction: column;
@@ -315,6 +317,8 @@ input[type=checkbox]:checked + .checkbox-label:before {
 
 .sqlbody {
     display: block;
+    white-space: pre-wrap;
+    word-wrap: break-word;
     height: calc(100% - 75px);
     padding: 15px;
     overflow-y: scroll;
