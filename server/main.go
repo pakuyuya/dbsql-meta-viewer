@@ -2,37 +2,27 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/pakuyuya/dbsql-meta-viewer/server/controller/api"
+	api_datafile "github.com/pakuyuya/dbsql-meta-viewer/server/controller/api/datafile"
 	"github.com/pakuyuya/dbsql-meta-viewer/server/controller/page"
 	"github.com/pakuyuya/dbsql-meta-viewer/server/domain/textdata"
-	"github.com/pakuyuya/gopathmatch"
-	yaml "gopkg.in/yaml.v2"
+	"github.com/pakuyuya/dbsql-meta-viewer/server/setting"
 )
-
-type ServerSettingType struct {
-	Port            string `yaml:"Port"`
-	Debug           bool   `yaml:"Debug"`
-	DefaultTextdata string `yaml:"DefaultTextdata"`
-}
-
-var ServerSetting *ServerSettingType
 
 func main() {
 	var err error
-	ServerSetting, err = loadSetting()
+	err = setting.LoadSetting()
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 
-	if ServerSetting.Debug {
+	if setting.ServerSetting.Debug {
 		gin.SetMode(gin.DebugMode)
 	} else {
 		gin.SetMode(gin.ReleaseMode)
@@ -63,57 +53,34 @@ func main() {
 	{
 		gapi.GET("/server/status", api.ServerStatusGET)
 		gapi.GET("/searchtext", api.SearchtextGET)
+		gapi.GET("/datafile/list", api_datafile.ListGET)
+		gapi.POST("/datafile/upload", api_datafile.UploadPOST)
+		gapi.GET("/datafile/download/:filename", api_datafile.DownloadGET)
+		gapi.POST("/datafile/remove/:filename", api_datafile.RemovePOST)
 	}
 
 	server := &http.Server{
-		Addr:           ":" + ServerSetting.Port,
+		Addr:           ":" + setting.ServerSetting.Port,
 		Handler:        router,
 		ReadTimeout:    30 * time.Second,
 		WriteTimeout:   30 * time.Second,
 		MaxHeaderBytes: 1 << 18,
 	}
-	if ServerSetting.Debug {
+	if setting.ServerSetting.Debug {
 		fmt.Println("run http server at " + server.Addr)
 	}
 	server.ListenAndServe()
 }
 
-func loadSetting() (*ServerSettingType, error) {
-	bytes, err := ioutil.ReadFile(`./setting.yml`)
-	if err != nil {
-		return nil, err
-	}
-
-	s := ServerSettingType{}
-	err = yaml.Unmarshal(bytes, &s)
-	if err != nil {
-		return nil, err
-	}
-
-	return &s, nil
-}
-
 func loadDefaultTextdata() error {
-	files := gopathmatch.Listup(ServerSetting.DefaultTextdata, gopathmatch.FlgFileOnly)
-	datas := make([]textdata.Textdata, 0)
-
-	for _, file := range files {
-		if ServerSetting.Debug {
-			fmt.Printf("load default textdata from `%s`\r\n", file)
-		}
-		file, err := os.Open(file)
-		if err != nil {
-			return err
-		}
-		defer file.Close()
-
-		dats, err := textdata.DecodeCSV(file)
-		if err != nil {
-			return err
-		}
-		datas = append(datas, dats...)
+	// load from `/path/to/textdata/dir/*`
+	path, _ := setting.ResolveTextdatasPath("*")
+	datas, err := textdata.LoadAllCsv(path)
+	if err != nil {
+		return err
 	}
 
+	// switch repository on memory
 	textdata.SwitchRepository(&datas)
 
 	return nil

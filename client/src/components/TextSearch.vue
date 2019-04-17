@@ -2,25 +2,27 @@
 <div id="content" class="outermost-box">
     <div class="left-control">
         <div class="left-control__wrapper">
-            <div class="gmenus left-control__row">
-                <div class="button">Sql検索</div>
+            <div class="left-control__header left-control__row">
+                <div class="left-control__caption">Sql検索</div>
+                <div class="left-control__config"><span class="config-icon" @click="$refs.SettingsDlg.show()"></span></div>
             </div>
             <div class="search-form">
                 <div class="left-control__row">
                     <form @submit.prevent="searchTextdata">
-                    <input type="search" class="search__textbox" v-model="query"><button class="search__button" type="submit">Go</button>
+                        <input type="search" class="search__textbox" v-bind:class="{ error: hasQueryAlert }" v-model="query" @keyup="refleshQueryAlert"><button class="search__button" type="submit">Go</button>
                     </form>
                 </div>
                 <div>
-                    <input type="checkbox" id="TextSearch__wordOnly" v-model="wordOnly">
+                    <input type="checkbox" id="TextSearch__wordOnly" v-model="wordOnly" @change="refleshQueryAlert">
                     <label for="TextSearch__wordOnly" class="checkbox-label">単語のみ</label>
-                    <input type="checkbox" id="TextSearch__not-ignorecase" v-model="notIgnoreCase">
+                    <input type="checkbox" id="TextSearch__not-ignorecase" v-model="notIgnoreCase" @change="refleshQueryAlert">
                     <label for="TextSearch__not-ignorecase" class="checkbox-label">大文字小文字を区別</label>
-                    <input type="checkbox" id="TextSearch__regex" v-model="regex">
+                    <input type="checkbox" id="TextSearch__regex" v-model="regex" @change="refleshQueryAlert">
                     <label for="TextSearch__regex" class="checkbox-label">正規表現</label>
-                    <input type="checkbox" id="TextSearch__bodyOnly" v-model="bodyOnly">
+                    <input type="checkbox" id="TextSearch__bodyOnly" v-model="bodyOnly" @change="refleshQueryAlert">
                     <label for="TextSearch__bodyOnly" class="checkbox-label">本文のみ検索</label>
                 </div>
+                <div v-if="errorMessage !== ''" class="error-box">{{ errorMessage }}</div>
             </div>
             <div class="search-list__wrapper">
                 <select v-model="selectedIdxies" multiple class="search-list" @change="reloadSelectedText">
@@ -31,16 +33,22 @@
     </div>
     <div class="detail-view">
         <h3 class="detail-caption">{{ detailCaption || '...' }}</h3>
-        <pre class="sqlbody">{{ detailText }}</pre>
+        <div v-highlightjs="detailText" class="sqlbody"><code class="sql"></code></div>
     </div>
+    <SettingsDlg ref="SettingsDlg"></SettingsDlg>
 </div>
 </template>
 
 <script>
 import axios from 'axios'
+import SettingsDlg from './SettingsDlg'
+import isvalid from '@/js/isvalid'
 
 export default {
   name: 'TestSearch',
+  components: {
+    SettingsDlg
+  },
   data: () => ({
     query: '',
     wordOnly: false,
@@ -51,13 +59,16 @@ export default {
     selectedIdxies: [],
     detailCaption: '',
     detailText: '',
-    detailTextSepalator: '\r\n----------------------------------\r\n'
+    detailTextSepalator: '\r\n----------------------------------\r\n',
+    errorMessage: '',
+    hasQueryAlert: false
   }),
   mounted: function () {
     this.searchTextdata()
   },
   methods: {
     searchTextdata: function () {
+      this.setError('')
       const baseurl = this.$ownapi.resolveurl('/searchtext')
       const queryparm = [
         `query=${encodeURIComponent(this.query)}`,
@@ -71,12 +82,12 @@ export default {
       axios.get(`${baseurl}?${queryparm}`)
         .then(response => {
           let data = response.data
-          if (data.Error) {
-            alert('テキストデータの検索に失敗しました')
-            return
-          }
           this.entries = data.datas
           this.selectedIdxies = response.count > 0 ? [0] : []
+        })
+        .catch(response => {
+          this.setError('検索処理でエラーが発生しました。開発者向けヒント：F12開発者コンソールをご確認ください。')
+          console.error(response)
         })
     },
     reloadSelectedText: function () {
@@ -86,6 +97,19 @@ export default {
       }
       this.detailCaption = entries.map(e => e.caption).join(', ')
       this.detailText = entries.map(e => e.body).join(this.detailTextSepalator)
+    },
+    refleshQueryAlert: function () {
+      this.hasQueryAlert = !this.checkQueryCond()
+    },
+    checkQueryCond: function () {
+      if (this.regex && !isvalid.regex(this.query)) {
+        return false
+      }
+      return true
+    },
+    setError: function (msg) {
+      msg = msg || ''
+      this.errorMessage = msg
     }
   }
 }
@@ -96,6 +120,7 @@ export default {
 
 ::-webkit-scrollbar {
     width: 10px;
+    height: 10px;
 }
 
 /*スクロールバーの軌道*/
@@ -143,6 +168,34 @@ export default {
     margin-bottom: 6px;
 }
 
+.left-control__header {
+    display: flex;
+    flex-direction: row;
+}
+.left-control__caption {
+    display: inline-block;
+    flex-grow: 1;
+}
+.left-control__config {
+    display: inline-block;
+    margin-right: 20px;
+}
+.config-icon {
+    display: inline-block;
+    height: 22px;
+    width: 22px;
+    background: url('../assets/gear.png');
+    background-size: 14px 14px;
+    background-position: center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    border-radius: 9px;
+
+    &:hover {
+        background-color: #00000088;
+    }
+}
+
 .search__textbox {
     vertical-align: middle;
     font-size: 12px;
@@ -151,6 +204,10 @@ export default {
     display: inline-box;
     background: $leftCtlBGColor;
     color: $leftCtlTextColor;
+    &.error {
+        color: #f82266;
+        background-color: #fee8f0;
+    }
 }
 .search__button {
     vertical-align: middle;
@@ -219,6 +276,11 @@ input[type=checkbox]:checked + .checkbox-label:before {
   opacity: 1;
 }
 
+.error-box {
+    color: #dc143c;
+    font-size: 10px;
+}
+
 .search-list__wrapper {
     margin-top: 15px;
     min-height: 200px;
@@ -239,6 +301,7 @@ input[type=checkbox]:checked + .checkbox-label:before {
 }
 
 .detail-view {
+    width: calc(100% - 300px);
     display: flex;
     display: -webkit-flex;
     flex-direction: column;
@@ -250,13 +313,99 @@ input[type=checkbox]:checked + .checkbox-label:before {
 
 .detail-caption {
     font-size: 24px;
+    height: 38px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+    white-space: pre-wrap;
 }
+
 .sqlbody {
-    margin-top: 15px;
+    display: block;
+    white-space: pre-wrap;
+    word-wrap: break-word;
     height: calc(100% - 75px);
-    background: #ddd;
-    color: #333;
     padding: 15px;
     overflow-y: scroll;
+    background: #dddde3;
+}
+</style>
+<style>
+.hljs, .hljs-subst {
+    color: #444;
+}
+.hljs-comment {
+    color: #888888;
+}
+
+.hljs-keyword,
+.hljs-attribute,
+.hljs-selector-tag,
+.hljs-meta-keyword,
+.hljs-doctag,
+.hljs-name {
+    font-weight: bold;
+}
+
+/* User color: hue: 0 */
+
+.hljs-type,
+.hljs-string,
+.hljs-number,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-quote,
+.hljs-template-tag,
+.hljs-deletion {
+    color: #880000;
+}
+
+.hljs-title,
+.hljs-section {
+    color: #880000;
+    font-weight: bold;
+}
+
+.hljs-regexp,
+.hljs-symbol,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-link,
+.hljs-selector-attr,
+.hljs-selector-pseudo {
+    color: #BC6060;
+}
+
+/* Language color: hue: 90; */
+
+.hljs-literal {
+    color: #78A960;
+}
+
+.hljs-built_in,
+.hljs-bullet,
+.hljs-code,
+.hljs-addition {
+    color: #397300;
+}
+
+/* Meta color: hue: 200 */
+
+.hljs-meta {
+    color: #1f7199;
+}
+
+.hljs-meta-string {
+    color: #4d99bf;
+}
+
+/* Misc effects */
+
+.hljs-emphasis {
+    font-style: italic;
+}
+
+.hljs-strong {
+    font-weight: bold;
 }
 </style>

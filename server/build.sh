@@ -7,6 +7,7 @@ rm -rf ./dist
 mkdir ./dist
 mkdir ./dist/static
 mkdir ./dist/templates
+mkdir ./dist/testdatas
 
 cp -f ./setting.yml ./dist/
 
