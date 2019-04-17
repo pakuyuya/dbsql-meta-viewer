@@ -313,6 +313,11 @@ input[type=checkbox]:checked + .checkbox-label:before {
 
 .detail-caption {
     font-size: 24px;
+    height: 38px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+    white-space: pre-wrap;
 }
 
 .sqlbody {
