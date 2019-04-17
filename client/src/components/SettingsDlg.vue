@@ -40,6 +40,7 @@
 </template>
 
 <script>
+import 'dialog-polyfill'
 import axios from 'axios'
 
 export default {
@@ -177,6 +178,9 @@ export default {
 }
 
 dialog {
+  &.hidden {
+    display: none;
+  }
   width: 600px;
   border: none;
   box-shadow: 0px 0px 5px #000000cc;
