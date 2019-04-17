@@ -187,6 +187,7 @@ dialog {
   margin: 0px auto;
   height: 70%;
   min-height: 150px;
+  overflow: hidden;
 }
 
 dialog::backdrop {
@@ -235,8 +236,8 @@ h3 {
 .content {
   padding: 15px 24px;
   font-size: 12px;
-  overflow: scroll-y;
-  height:100%;
+  overflow-y: scroll;
+  height: 90%;
 }
 
 h4 {
@@ -253,9 +254,15 @@ table {
   border-collapse: collapse;
 }
 
+th {
+  background: $leftBGColor;
+  color: $leftTextColor;
+}
+
 th, td {
   border: solid 1px $grayLine;
   padding: 3px 5px;
+  max-height:100%;
 }
 
 .datafiles-col {
