@@ -28,10 +28,13 @@
                 <div @click="listmode = 'list'" class="search-list__icon-box" :class="{'selected': listmode === 'list'}"><img src="@/assets/icon-listmenu.png" class="search-list__icon"></div>
                 <div @click="listmode = 'tree'" class="search-list__icon-box" :class="{'selected': listmode === 'tree'}"><img src="@/assets/icon-treemenu.png" class="search-list__icon treemenu"></div>
             </div>
-            <div class="search-list__wrapper">
+            <div class="search-list__wrapper" v-if="listmode == 'list'">
                 <select v-model="selectedIdxies" multiple class="search-list" @change="reloadSelectedText">
                     <option v-for="entry in entries" v-bind:key="entry.idx" :value="entry.idx">{{entry.caption}}</option>
                 </select>
+            </div>
+            <div class="search-list__wrapper" v-if="listmode == 'tree'">
+                <tree :props_models="treeModels" class="search-tree"/>
             </div>
         </div>
     </div>
@@ -46,12 +49,14 @@
 <script>
 import axios from 'axios'
 import SettingsDlg from './SettingsDlg'
+import Tree from './TextSearch/Tree'
 import isvalid from '@/js/isvalid'
 
 export default {
-  name: 'TestSearch',
+  name: 'TextSearch',
   components: {
-    SettingsDlg
+    SettingsDlg,
+    Tree
   },
   data: () => ({
     query: '',
@@ -66,7 +71,24 @@ export default {
     detailText: '',
     detailTextSepalator: '\r\n----------------------------------\r\n',
     errorMessage: '',
-    hasQueryAlert: false
+    hasQueryAlert: false,
+    treeModels: [
+      { label: 'a1',
+        children: [
+          { label: 'b1',
+            children: [
+              { label: 'c1' },
+              { label: 'c2' },
+              { label: 'c3' }
+            ]},
+            { label: 'b2',
+            children: [
+              { label: 'd1' },
+              { label: 'd2' },
+              { label: 'd3' }
+            ]},
+        ]}
+    ]
   }),
   mounted: function () {
     this.searchTextdata()
@@ -326,6 +348,13 @@ input[type=checkbox]:checked + .checkbox-label:before {
         padding-left: 5px;
         font-size: 11px;
     }
+}
+
+.search-tree {
+    @include grow-box;
+    width: 220px;
+    height: 100%;
+    font-size: 12px;
 }
 
 .detail-view {
