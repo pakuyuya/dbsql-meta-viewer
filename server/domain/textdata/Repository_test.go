@@ -7,9 +7,9 @@ import (
 // Search is a function search textdata in shared repository
 func TestSearchRepository(t *testing.T) {
 	repos := []Textdata{
-		Textdata{Caption: "caption", Body: "this is content", CreateAt: "2019-01-01T11:22:33"},
-		Textdata{Caption: "caption2", Body: "this is content2", CreateAt: "2019-01-01T11:22:33"},
-		Textdata{Caption: "caption3", Body: "this is content3", CreateAt: "2019-01-01T11:22:33"},
+		Textdata{Namespace: "np1", Caption: "caption", Body: "this is content", CreateAt: "2019-01-01T11:22:33"},
+		Textdata{Namespace: "np1/sub", Caption: "caption2", Body: "this is content2", CreateAt: "2019-01-01T11:22:33"},
+		Textdata{Namespace: "np2/sub", Caption: "caption3", Body: "this is content3", CreateAt: "2019-01-01T11:22:33"},
 	}
 	SwitchRepository(&repos)
 

@@ -21,10 +21,11 @@ type SearchtextGETResponse struct {
 	Datas []TextdataForResponse `json:"datas"`
 }
 type TextdataForResponse struct {
-	Idx     int    `json:"idx"`
-	Caption string `json:"caption"`
-	Body    string `json:"body"`
-	Since   string `json:"since"`
+	Idx       int    `json:"idx"`
+	Namespace string `json:"namespace"`
+	Caption   string `json:"caption"`
+	Body      string `json:"body"`
+	Since     string `json:"since"`
 }
 
 func SearchtextGET(c *gin.Context) {
@@ -49,6 +50,7 @@ func SearchtextGET(c *gin.Context) {
 	for i, data := range datas {
 		resdata := TextdataForResponse{}
 		resdata.Idx = i
+		resdata.Namespace = data.Namespace
 		resdata.Caption = data.Caption
 		if param.ResponseBody == "true" {
 			resdata.Body = data.Body

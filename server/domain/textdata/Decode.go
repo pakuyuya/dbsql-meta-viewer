@@ -28,8 +28,9 @@ func DecodeCSV(r io.Reader) ([]Textdata, error) {
 			return nil, fmt.Errorf("invalid row. too less columns num. [position]: row %d [data]: %s", i, row)
 		}
 		data := Textdata{}
-		data.Caption = row[0]
-		data.Body = row[1]
+		data.Namespace = row[0]
+		data.Caption = row[1]
+		data.Body = row[2]
 		data.CreateAt = createat
 		datas = append(datas, data)
 	}

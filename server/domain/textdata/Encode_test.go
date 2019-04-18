@@ -25,12 +25,12 @@ func TestEncodeCSV(t *testing.T) {
 		}
 	}
 
-	genExpect := func(caption string, body string) Textdata {
-		return Textdata{Caption: caption, Body: body, CreateAt: ""}
+	genExpect := func(namespace string, caption string, body string) Textdata {
+		return Textdata{Namespace: namespace, Caption: caption, Body: body, CreateAt: ""}
 	}
 
-	gotest([]Textdata{genExpect("a", "b")}, `a,b`+linebreak)
-	gotest([]Textdata{genExpect("a", "b"), genExpect("b", "c")}, `a,b`+linebreak+`b,c`+linebreak)
-	gotest([]Textdata{genExpect("\"a\"", "b")}, `"""a""",b`+linebreak)
-	gotest([]Textdata{genExpect("\"a\r\nb\rc\nd\"", "b")}, "\"\"\"a\r\nb\rc\nd\"\"\",b"+linebreak)
+	gotest([]Textdata{genExpect("f", "a", "b")}, `f,a,b`+linebreak)
+	gotest([]Textdata{genExpect("f", "a", "b"), genExpect("f", "b", "c")}, `f,a,b`+linebreak+`f,b,c`+linebreak)
+	gotest([]Textdata{genExpect("f", "\"a\"", "b")}, `f,"""a""",b`+linebreak)
+	gotest([]Textdata{genExpect("f", "\"a\r\nb\rc\nd\"", "b")}, "f,\"\"\"a\r\nb\rc\nd\"\"\",b"+linebreak)
 }
