@@ -24,6 +24,10 @@
                 </div>
                 <div v-if="errorMessage !== ''" class="error-box">{{ errorMessage }}</div>
             </div>
+            <div class="search-list__menutype-wrapper">
+                <div @click="listmode = 'list'" class="search-list__icon-box" :class="{'selected': listmode === 'list'}"><img src="@/assets/icon-listmenu.png" class="search-list__icon"></div>
+                <div @click="listmode = 'tree'" class="search-list__icon-box" :class="{'selected': listmode === 'tree'}"><img src="@/assets/icon-treemenu.png" class="search-list__icon treemenu"></div>
+            </div>
             <div class="search-list__wrapper">
                 <select v-model="selectedIdxies" multiple class="search-list" @change="reloadSelectedText">
                     <option v-for="entry in entries" v-bind:key="entry.idx" :value="entry.idx">{{entry.caption}}</option>
@@ -56,6 +60,7 @@ export default {
     regex: false,
     bodyOnly: false,
     entries: [],
+    listmode: 'tree',
     selectedIdxies: [],
     detailCaption: '',
     detailText: '',
@@ -281,10 +286,33 @@ input[type=checkbox]:checked + .checkbox-label:before {
     font-size: 10px;
 }
 
+.search-list__menutype-wrapper {
+  margin-top: 12px;
+}
+.search-list__icon-box {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  border-radius: 2px;
+  &:hover {
+    background: rgba(0, 0, 0, 0.3);
+  }
+  &.selected, &:active {
+    box-shadow: 10px 10px 10px 10px rgba(0,0,0,0.5) inset;
+    background: rgba(0, 0, 0, 0.3);
+  }
+}
+
+.search-list__icon {
+  width: 12px;
+  height: 12px;
+  margin: 6px;
+}
+
 .search-list__wrapper {
-    margin-top: 15px;
     min-height: 200px;
-    height: calc(100% - 160px);
+    height: calc(100% - 190px);
 }
 
 .search-list {
