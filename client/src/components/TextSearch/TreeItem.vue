@@ -5,7 +5,9 @@
         <span class="treeitem-label">{{ label }}</span>
     </div>
     <div class="treeitem-children" :class="{ 'closed' : childClosed }">
-        <TreeItem v-for="(child, idx) in model.children" :key="idx" :ref="'child'" :props_model="child" @onSelectAnyChild="onSelectAnyChild" />
+        <div v-for="(child, idx) in model.children" :key="idx" >
+            <TreeItem ref="child" :props_model="child" @onSelectAnyChild="onSelectAnyChild" />
+        </div>
     </div>
 </div>
 </template>
@@ -26,12 +28,27 @@ export default {
     label () {
       let label = this.model.label || 'item'
       if (this.model.children) {
-        let len = this.model.children.length
-        if (len) {
-          label += `${len}`
-        }
+        label += `(${this.childrenCount})`
       }
       return label
+    },
+    childrenCount () {
+      const getcnt = (model) => {
+        if (model.children) {
+          let sum = 0
+          for (let m of model.children) {
+            sum += getcnt(m)
+          }
+          return sum
+        }
+        return 1
+      }
+
+      if (this.model.children) {
+        return getcnt(this.model)
+      } else {
+        return 1
+      }
     },
     selectable () {
       return !this.model.children

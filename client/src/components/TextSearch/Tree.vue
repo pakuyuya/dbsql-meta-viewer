@@ -34,7 +34,7 @@ export default {
         }
       }
       child.selected = true
-      console.log(child)
+      this.$emit('onSelectChild', child)
     },
     onOpenAll () {
       if (this.model.children) {

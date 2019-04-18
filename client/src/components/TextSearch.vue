@@ -34,7 +34,7 @@
                 </select>
             </div>
             <div class="search-list__wrapper" v-if="listmode == 'tree'">
-                <tree :props_models="treeModels" class="search-tree"/>
+                <tree ref="tree" :props_models="treeModels" class="search-tree" @onSelectChild="onSelectTreeChild"/>
             </div>
         </div>
     </div>
@@ -72,23 +72,7 @@ export default {
     detailTextSepalator: '\r\n----------------------------------\r\n',
     errorMessage: '',
     hasQueryAlert: false,
-    treeModels: [
-      { label: 'a1',
-        children: [
-          { label: 'b1',
-            children: [
-              { label: 'c1' },
-              { label: 'c2' },
-              { label: 'c3' }
-            ]},
-            { label: 'b2',
-            children: [
-              { label: 'd1' },
-              { label: 'd2' },
-              { label: 'd3' }
-            ]},
-        ]}
-    ]
+    treeModels: []
   }),
   mounted: function () {
     this.searchTextdata()
@@ -111,6 +95,10 @@ export default {
           let data = response.data
           this.entries = data.datas
           this.selectedIdxies = response.count > 0 ? [0] : []
+          this.treeModels.splice(0, this.treeModels.length)
+          for (let model of textdatasToTreeModel(data.datas)) {
+            this.treeModels.push(model)
+          }
         })
         .catch(response => {
           this.setError('検索処理でエラーが発生しました。開発者向けヒント：F12開発者コンソールをご確認ください。')
@@ -122,8 +110,11 @@ export default {
       for (let i of this.selectedIdxies) {
         entries.push(this.entries[i])
       }
-      this.detailCaption = entries.map(e => e.caption).join(', ')
-      this.detailText = entries.map(e => e.body).join(this.detailTextSepalator)
+      this.applySelectedText(entries)
+    },
+    applySelectedText: function (datas) {
+      this.detailCaption = datas.map(e => e.caption).join(', ')
+      this.detailText = datas.map(e => e.body).join(this.detailTextSepalator)
     },
     refleshQueryAlert: function () {
       this.hasQueryAlert = !this.checkQueryCond()
@@ -137,8 +128,41 @@ export default {
     setError: function (msg) {
       msg = msg || ''
       this.errorMessage = msg
+    },
+    onSelectTreeChild (child) {
+      this.applySelectedText([child.model.data])
     }
   }
+}
+
+function textdatasToTreeModel (datas) {
+  let models = []
+  for (let data of datas) {
+    let crtFloorModels = models
+    if (data.namespace) {
+      for (let ns of data.namespace.split('/')) {
+        let parentModel = crtFloorModels.find((value) => ns === value.label)
+        if (parentModel === undefined) {
+          parentModel = {
+            label: ns,
+            data: undefined,
+            children: []
+          }
+          crtFloorModels.push(parentModel)
+        }
+        crtFloorModels = parentModel.children
+      }
+    }
+
+    let model = {
+      label: data.caption,
+      data: data,
+      children: undefined
+    }
+    crtFloorModels.push(model)
+  }
+
+  return models
 }
 </script>
 
