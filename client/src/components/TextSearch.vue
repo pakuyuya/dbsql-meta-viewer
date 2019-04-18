@@ -352,7 +352,7 @@ input[type=checkbox]:checked + .checkbox-label:before {
     display: block;
     white-space: pre-wrap;
     word-wrap: break-word;
-    height: calc(100% - 75px);
+    height: calc(100% - 65px);
     padding: 15px;
     overflow-y: scroll;
     background: #dddde3;
