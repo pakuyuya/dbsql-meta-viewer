@@ -317,7 +317,7 @@ input[type=checkbox]:checked + .checkbox-label:before {
     overflow: hidden;
     text-overflow: ellipsis;
     word-wrap: break-word;
-    white-space: pre-wrap;
+    white-space: nowrap;
 }
 
 .sqlbody {
