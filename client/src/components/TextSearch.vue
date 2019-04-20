@@ -137,6 +137,8 @@ export default {
 
 function textdatasToTreeModel (datas) {
   let models = []
+
+  // construct tree
   for (let data of datas) {
     let crtFloorModels = models
     if (data.namespace) {
@@ -161,6 +163,18 @@ function textdatasToTreeModel (datas) {
     }
     crtFloorModels.push(model)
   }
+
+  // sort
+  const sortChildrenRecursive = (models) => {
+    if (!models) {
+      return
+    }
+    models.sort((l, r) => l.label.localeCompare(r.label))
+    for (let child of models) {
+      sortChildrenRecursive(child.children)
+    }
+  }
+  sortChildrenRecursive(models)
 
   return models
 }
@@ -379,6 +393,7 @@ input[type=checkbox]:checked + .checkbox-label:before {
     width: 220px;
     height: 100%;
     font-size: 12px;
+    overflow-y: scroll;
 }
 
 .detail-view {
