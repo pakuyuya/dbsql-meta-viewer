@@ -93,10 +93,17 @@ export default {
       axios.get(`${baseurl}?${queryparm}`)
         .then(response => {
           let data = response.data
+
+          let datas = [].concat(data.datas)
+          datas.sort((l, r) => (l.caption || '').localeCompare(r.caption || ''))
+
+          // init list
           this.entries = data.datas
           this.selectedIdxies = response.count > 0 ? [0] : []
+
+          // init tree
           this.treeModels.splice(0, this.treeModels.length)
-          for (let model of textdatasToTreeModel(data.datas)) {
+          for (let model of textdatasToTreeModel(datas)) {
             this.treeModels.push(model)
           }
         })
