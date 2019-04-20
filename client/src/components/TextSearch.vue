@@ -106,6 +106,7 @@ export default {
           for (let model of textdatasToTreeModel(datas)) {
             this.treeModels.push(model)
           }
+          this.$refs.tree.$forceUpdate()
         })
         .catch(response => {
           this.setError('検索処理でエラーが発生しました。開発者向けヒント：F12開発者コンソールをご確認ください。')
@@ -120,8 +121,8 @@ export default {
       this.applySelectedText(entries)
     },
     applySelectedText: function (datas) {
-      this.detailCaption = datas.map(e => e.caption).join(', ')
-      this.detailText = datas.map(e => e.body).join(this.detailTextSepalator)
+      this.detailCaption = datas.map(e => e.namespace + '/' + e.caption).join(', ')
+      this.detailText = datas.map(e => `-- ${e.namespace}/${e.caption}\r\n${e.body}`).join(this.detailTextSepalator)
     },
     refleshQueryAlert: function () {
       this.hasQueryAlert = !this.checkQueryCond()
@@ -415,7 +416,7 @@ input[type=checkbox]:checked + .checkbox-label:before {
 }
 
 .detail-caption {
-    font-size: 24px;
+    font-size: 20px;
     height: 38px;
     overflow: hidden;
     text-overflow: ellipsis;
