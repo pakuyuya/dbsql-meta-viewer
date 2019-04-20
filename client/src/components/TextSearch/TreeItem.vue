@@ -1,6 +1,6 @@
 <template>
 <div>
-    <div class="treeitem-line" @click="select" :class="{'selected': selected}">
+    <div class="treeitem-line" @click="select" :class="{'selected': selected, 'toggleable': !selectable}">
         <span class="treeitem-mark">{{ mark }}</span>
         <span class="treeitem-label">{{ label }}</span>
     </div>
@@ -123,6 +123,7 @@ export default {
 .treeitem-line {
   padding-left: 3px;
   display: flex;
+  height: 20px;
   &:hover {
     background: $primaryColor;
   }
@@ -131,6 +132,13 @@ export default {
     color: $primaryTextColor;
   }
   cursor: pointer;
+
+  &.toggleable {
+    background: rgba(0, 0, 0, 0.2);
+    &:hover {
+      background: $primaryColor;
+    }
+  }
 }
 
 .treeitem-mark {
@@ -141,6 +149,9 @@ export default {
 .treeitem-label {
   display: inline-block;
   flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .treeitem-children {
