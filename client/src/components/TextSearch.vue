@@ -102,9 +102,10 @@ export default {
           this.selectedIdxies = response.count > 0 ? [0] : []
 
           // init tree
+          let newTrees = textdatasToTreeModel(datas)
           this.treeModels.splice(0, this.treeModels.length)
-          for (let model of textdatasToTreeModel(datas)) {
-            this.treeModels.push(model)
+          for (let newTree of newTrees) {
+            this.treeModels.push(newTree)
           }
           this.$refs.tree.$forceUpdate()
         })
