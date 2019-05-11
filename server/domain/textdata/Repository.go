@@ -60,7 +60,7 @@ func SearchRepository(query string, with ...func(opt *searchTextdataOpt) searchT
 
 	for _, data := range *refRepos {
 		if !opt.BodyOnly {
-			if regex.MatchString(data.Caption) {
+			if regex.MatchString(data.Caption + "/" + data.Namespace) {
 				datas = append(datas, data)
 				continue
 			}
