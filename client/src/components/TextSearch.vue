@@ -107,7 +107,10 @@ export default {
           for (let newTree of newTrees) {
             this.treeModels.push(newTree)
           }
-          this.$refs.tree.$forceUpdate()
+
+          if (this.$refs.tree) {
+            this.$refs.tree.$forceUpdate()
+          }
         })
         .catch(response => {
           this.setError('検索処理でエラーが発生しました。開発者向けヒント：F12開発者コンソールをご確認ください。')
