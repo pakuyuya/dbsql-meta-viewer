@@ -33,7 +33,7 @@
                     <option v-for="entry in entries" v-bind:key="entry.idx" :value="entry.idx">{{entry.caption}}</option>
                 </select>
             </div>
-            <div class="search-list__wrapper" v-if="listmode == 'tree'">
+            <div class="search-list__wrapper" v-if="listmode == 'tree' && visibleTree">
                 <tree ref="tree" :props_models="treeModels" class="search-tree" @onSelectChild="onSelectTreeChild"/>
             </div>
         </div>
@@ -72,7 +72,8 @@ export default {
     detailTextSepalator: '\r\n----------------------------------\r\n',
     errorMessage: '',
     hasQueryAlert: false,
-    treeModels: []
+    treeModels: [],
+    visibleTree: true
   }),
   mounted: function () {
     this.searchTextdata()
@@ -108,9 +109,9 @@ export default {
             this.treeModels.push(newTree)
           }
 
-          if (this.$refs.tree) {
-            this.$refs.tree.$forceUpdate()
-          }
+          this.visibleTree = false
+
+          setTimeout(() => { this.visibleTree = true }, 10)
         })
         .catch(response => {
           this.setError('検索処理でエラーが発生しました。開発者向けヒント：F12開発者コンソールをご確認ください。')
